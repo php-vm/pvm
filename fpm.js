@@ -1,5 +1,5 @@
 const { execSync } = require("child_process");
-const { versions } = require("./php");
+const { installed_versions } = require("./php");
 
 /**
  * Restart PHP-FPM and NGINX services
@@ -7,10 +7,14 @@ const { versions } = require("./php");
  * @return {boolean}
  */
 const restart = () => {
-  versions().forEach(version => {
-    execSync(`sudo /usr/sbin/service php${version}-fpm restart`);
+  installed_versions().forEach(version => {
+    try{
+      execSync(`sudo /usr/sbin/service php${version}-fpm restart`);
+    }catch (e){}
   });
-  execSync("sudo /usr/sbin/service nginx restart");
+  try{
+    execSync("sudo /usr/sbin/service nginx restart");
+  }catch (e){}
   return true;
 };
 

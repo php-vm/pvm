@@ -6,20 +6,46 @@ const { execSync } = require("child_process");
  * @return {string}
  */
 const current = () =>
-  execSync('php -v | head -n 1 | cut -d " " -f 2 | cut -f1-2 -d"."')
-    .toString()
-    .trim();
+    execSync('php -v | head -n 1 | cut -d " " -f 2 | cut -f1-2 -d"."')
+        .toString()
+        .trim();
 
 /**
  * Get all installed PHP version numbers
  *
  * @return {Array.string}
  */
-const versions = () =>
-  execSync("find /usr/bin -name 'php*.*' -type f | cut -b 13- | sort -g")
-    .toString()
-    .trim()
-    .split("\n");
+const installed_versions = () =>
+    execSync("find /usr/bin -name 'php*.*' -type f | cut -b 13- | sort -g")
+        .toString()
+        .trim()
+        .split("\n");
+
+/**
+ * Get all available PHP version numbers
+ *
+ * @return {Array.string}
+ */
+const available_versions = () =>
+    execSync("apt-cache search --names-only '^php[0-9]+(.[0-9]+)$' | awk '{print $1}'")
+        .toString()
+        .trim()
+        .split("\n")
+        .filter(module => module.startsWith('php'))
+        .map(module => module.replace('php', ''));
+
+/**
+ * Get all available PHP modules for a specified version
+ *
+ * @return {Array.string}
+ */
+const modules = version =>
+    execSync(`apt-cache search --names-only '^php${version}-' | awk '{print $1}'`)
+        .toString()
+        .trim()
+        .split("\n")
+        .filter(module => module.startsWith('php'))
+        .map(module => module.split('-').slice(1).join('-'));
 
 /**
  * Switch default PHP Version
@@ -29,7 +55,7 @@ const versions = () =>
  * @return {bool|string}
  */
 const use = version => {
-  if (!/^\d\.\d$/.test(version) || !versions().includes(version)) {
+  if (!installed_versions().includes(version)) {
     throw new Error(`Invalid version number "${version}"`);
   }
 
@@ -38,8 +64,38 @@ const use = version => {
   }
 
   execSync(
-    `sudo /usr/bin/update-alternatives --set php /usr/bin/php${version}`
+      `sudo /usr/bin/update-alternatives --set php /usr/bin/php${version}`
   );
+
+  return current();
+};
+
+/**
+ * Install a PHP Version
+ *
+ * @param {string} version PHP Version number
+ * @param {array} modules PHP modules
+ * @param {bool} installRecommends Install recommended packages
+ *
+ * @return {bool|string}
+ */
+const install = (version, modules, installRecommends) => {
+  if (!available_versions().includes(version)) {
+    throw new Error(`Invalid version number "${version}"`);
+  }
+
+  let packages = [
+    `php${version}`,
+    ...modules.map(module => `php${version}-${module.replace(/\s/g,'').replace(/[^0-9A-Za-z.-_]/g, '')}`)
+  ];
+
+  console.log(`Installing php${version}...`);
+
+  execSync(
+      `sudo apt-get ${installRecommends ? '' : '--no-install-recommends'} install ${packages.join(' ')} -y`
+  );
+
+  console.log(`Successfully installed php${version}!`);
 
   return current();
 };
@@ -109,8 +165,11 @@ const moduleToggle = (module, sapi) => {
 
 module.exports = {
   current,
-  versions,
+  installed_versions,
+  available_versions,
+  modules,
   use,
+  install,
   moduleStatus,
   moduleEnable,
   moduleDisable,
