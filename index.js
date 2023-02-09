@@ -116,16 +116,19 @@ program
         "gd",
         "common"
     ])
-    .description("Installs a PHP version")
+    .description("Installs a PHP version or composer")
     .action((version, options) => {
-        version = version.replace('php', '');
+        if(version === 'composer'){
+            php.install_composer();
+        }else{
+            version = version.replace('php', '');
 
-        console.log(version);
-        if (php.install(version, options.modules, options.installRecommends)) {
-            console.log("Restarting PHP-FPM and NGINX");
-            fpm.restart();
+            if (php.install(version, options.modules, options.installRecommends)) {
+                console.log("Restarting PHP-FPM and NGINX");
+                fpm.restart();
+            }
         }
-    })
+    });
 
 program
     .command("xdebug [sapi] [status]")

@@ -112,6 +112,18 @@ const install = (version, modules, installRecommends) => {
 };
 
 /**
+ * Installs composer
+ */
+const install_composer = () => {
+  console.log('Installing composer...');
+  execSync(`curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php`);
+  execSync(`sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer`);
+  console.log('Cleanup...');
+  execSync(`rm /tmp/composer-setup.php`);
+  console.log('Successfully installed composer.')
+}
+
+/**
  * Get the status of a PHP module
  *
  * @param {string} version PHP Version
@@ -182,6 +194,7 @@ module.exports = {
   modules,
   use,
   install,
+  install_composer,
   moduleStatus,
   moduleEnable,
   moduleDisable,
