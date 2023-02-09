@@ -48,6 +48,17 @@ const modules = version =>
         .map(module => module.split('-').slice(1).join('-'));
 
 /**
+ * Add php version repository
+ *
+ * @return {Array.string}
+ */
+const setup = () => {
+  console.log('Adding ondrej/php repository...');
+  execSync(`sudo add-apt-repository ppa:ondrej/php -y && sudo apt-get update`);
+  console.log('Successfully added ondrej/php repository.')
+}
+
+/**
  * Switch default PHP Version
  *
  * @param {string} version PHP Version number
@@ -164,6 +175,7 @@ const moduleToggle = (module, sapi) => {
 };
 
 module.exports = {
+  setup,
   current,
   installed_versions,
   available_versions,

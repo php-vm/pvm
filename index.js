@@ -5,7 +5,6 @@ const chalk = require("chalk");
 const php = require("./php");
 const fpm = require("./fpm");
 const applicationVersion = require("../package.json").version;
-const { execSync } = require("child_process");
 
 if (process.argv.length === 2) {
     process.argv.push("status");
@@ -47,6 +46,15 @@ program
     .description("Show current PHP version status")
     .action(() => {
         renderStatus();
+
+        process.exit(0);
+    });
+
+program
+    .command("setup")
+    .description("Setup php version manager\nWill setup php repository list")
+    .action(() => {
+        php.setup();
 
         process.exit(0);
     });
