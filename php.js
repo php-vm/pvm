@@ -54,7 +54,9 @@ const modules = version =>
  */
 const setup = () => {
   console.log('Adding ondrej/php repository...');
-  execSync(`sudo add-apt-repository ppa:ondrej/php -y && sudo apt-get update`);
+  execSync(`sudo add-apt-repository ppa:ondrej/php -y`);
+  console.log('Updating repositories...');
+  execSync(`sudo apt-get update`);
   console.log('Successfully added ondrej/php repository.')
 }
 

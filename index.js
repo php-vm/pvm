@@ -52,7 +52,7 @@ program
 
 program
     .command("setup")
-    .description("Setup php version manager\nWill setup php repository list")
+    .description("Setup php version manager. Will setup php repository list")
     .action(() => {
         php.setup();
 
