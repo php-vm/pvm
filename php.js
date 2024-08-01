@@ -1,5 +1,8 @@
 const { execSync } = require("child_process");
 
+const is_installed = () =>
+    installed_versions().length > 0
+
 /**
  * Get currently active PHP version number
  *
@@ -19,7 +22,8 @@ const installed_versions = () =>
     execSync("find /usr/bin -name 'php*.*' -type f | cut -b 13- | sort -g")
         .toString()
         .trim()
-        .split("\n");
+        .split("\n")
+        .filter((version) => version !== '');
 
 /**
  * Get all available PHP version numbers
@@ -35,11 +39,22 @@ const available_versions = () =>
         .map(module => module.replace('php', ''));
 
 /**
+ * Get all installed PHP modules for a specified version
+ *
+ * @return {Array.string}
+ */
+const installed_modules = version =>
+    execSync(`php${version} -m | grep -v '\\[PHP Modules\\]' | awk '/\\[Zend Modules\\]/{exit} {print}'`)
+        .toString()
+        .trim()
+        .split("\n");
+
+/**
  * Get all available PHP modules for a specified version
  *
  * @return {Array.string}
  */
-const modules = version =>
+const available_modules = version =>
     execSync(`apt-cache search --names-only '^php${version}-' | awk '{print $1}'`)
         .toString()
         .trim()
@@ -53,6 +68,7 @@ const modules = version =>
  * @return {Array.string}
  */
 const setup = () => {
+  //TODO check if repo already in repository list
   console.log('Adding ondrej/php repository...');
   execSync(`sudo add-apt-repository ppa:ondrej/php -y`);
   console.log('Updating repositories...');
@@ -94,7 +110,8 @@ const use = version => {
  */
 const install = (version, modules, installRecommends) => {
   if (!available_versions().includes(version)) {
-    throw new Error(`Invalid version number "${version}"`);
+    console.log(`The version number "${version}" is invalid or no install candidate was found. If not already done, enter \`pvm setup\` to install the php repository list.`);
+    return null;
   }
 
   let packages = [
@@ -190,10 +207,12 @@ const moduleToggle = (module, sapi) => {
 
 module.exports = {
   setup,
+  is_installed,
   current,
   installed_versions,
   available_versions,
-  modules,
+  installed_modules,
+  available_modules,
   use,
   install,
   install_composer,

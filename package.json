@@ -13,7 +13,7 @@
   ],
   "contributors": [
     "Chris <chris@bogardo.com>",
-    "Marius Karstedt <marius-karstedt.de>",
+    "Marius Karstedt <info@marius-karstedt.de>",
     "Sebastian"
   ],
   "license": "MIT",
@@ -25,6 +25,6 @@
     "prettier": "1.18.2"
   },
   "bin": {
-    "pvm": "./src/index.js"
+    "pvm": "bin/index.js"
   }
 }

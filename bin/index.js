@@ -2,8 +2,8 @@
 
 const commander = require("commander");
 const chalk = require("chalk");
-const php = require("./php");
-const fpm = require("./fpm");
+const php = require("../php");
+const fpm = require("../fpm");
 const applicationVersion = require("../package.json").version;
 
 if (process.argv.length === 2) {
@@ -14,6 +14,13 @@ const renderStatus = () => {
     console.log(
         chalk`\n  {green PHP Version Manager} version {yellow ${applicationVersion}}\n`
     );
+
+    const php_installed = php.is_installed()
+
+    if(!php_installed){
+        console.log("  PHP wurde auf dem System nicht gefunden. Nutze `pvm install 8.2`, um eine php version zu installieren.")
+        return;
+    }
 
     const version = php.current();
     const cli = php.moduleStatus(version, "cli", "xdebug");
@@ -66,19 +73,21 @@ program
     .option('-m, --modules', 'List modules', false)
     .description("List PHP available versions and modules")
     .action((options) => {
-        const currentVersion = php.current();
-        if(options.version !== null)
+        console.log(options.version);
+        if(options.version !== undefined)
             options.version = options.version.replace('php', '');
         (options.installed ? php.installed_versions() : php.available_versions()).forEach(version => {
             if(options.version !== null && options.version !== version)
                 return;
+            const currentVersion = php.is_installed() ? php.current() : null;
             if (version === currentVersion) {
                 console.log(chalk.green(version));
             } else {
                 console.log(version);
             }
             if(options.modules) {
-                console.log(`Module: ${php.modules(version).join(',')}`)
+                let modules = options.installed ? php.installed_modules(version) : php.available_modules(version);
+                console.log(`Module: ${modules.join(',')}`)
             }
         });
 
