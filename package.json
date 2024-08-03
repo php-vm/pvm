@@ -1,6 +1,6 @@
 {
-  "name": "php-vm",
-  "version": "0.4.0",
+  "name": "@php-vm/php-vm",
+  "version": "0.4.1",
   "description": "Linux command line tool for managing locally installed PHP versions.",
   "main": "src/index.js",
   "scripts": {
@@ -12,9 +12,17 @@
     "pvm"
   ],
   "contributors": [
-    "Chris <chris@bogardo.com>",
-    "Marius Karstedt <info@marius-karstedt.de>",
-    "Sebastian"
+    {
+      "name": "Chris",
+      "email": "chris@bogardo.com"
+    },
+    {
+      "name": "Marius Karstedt",
+      "email": "info@marius-karstedt.de"
+    },
+    {
+      "name": "Sebastian"
+    }
   ],
   "license": "MIT",
   "dependencies": {
@@ -26,5 +34,14 @@
   },
   "bin": {
     "pvm": "bin/index.js"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/php-vm/pvm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/php-vm/pvm/issues"
+  },
+  "homepage": "https://github.com/php-vm/pvm#readme",
+  "author": ""
 }
