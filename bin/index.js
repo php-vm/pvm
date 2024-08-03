@@ -131,7 +131,6 @@ program
             php.install_composer();
         }else{
             version = version.replace('php', '');
-
             if (php.install(version, options.modules, options.installRecommends)) {
                 console.log("Restarting PHP-FPM and NGINX");
                 fpm.restart();

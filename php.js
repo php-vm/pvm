@@ -114,12 +114,22 @@ const install = (version, modules, installRecommends) => {
     return null;
   }
 
-  let packages = [
-    `php${version}`,
+  let packages = [];
+
+  if(!installed_versions().includes(version)){
+    packages.push(`php${version}`);
+  }
+
+  packages = [
+      ...packages,
     ...modules.map(module => `php${version}-${module.replace(/\s/g,'').replace(/[^0-9A-Za-z.-_]/g, '')}`)
   ];
 
   console.log(`Installing php${version}...`);
+
+  if(packages.length === 0){
+    console.log(`No modules to install for php${version}`);
+  }
 
   execSync(
       `sudo apt-get ${installRecommends ? '' : '--no-install-recommends'} install ${packages.join(' ')} -y`
